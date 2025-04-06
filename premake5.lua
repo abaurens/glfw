@@ -1,5 +1,7 @@
 -- glfw
 
+require("premake", ">=5.0.0-beta6")
+
 project "glfw"
   kind "StaticLib"
   language "C"
@@ -10,14 +12,8 @@ project "glfw"
   targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
   objdir ("%{wks.location}/build/" .. outputdir .. "%{prj.name}")
 
-  IncludeDir["glfw"] = "%{wks.location}/libs/glfw/include"
-
   removedefines {
     "GLFW_INCLUDE_NONE" -- ensure GLFW_INCLUDE_NONE is not defined during glfw compilation
-  }
-
-  includedirs {
-    "%{IncludeDir.glfw}"
   }
 
   files {
@@ -109,7 +105,7 @@ project "glfw"
     defines {
       "_GLFW_X11"
     }
-  
+
   filter "system:macosx"
     pic "On"
 
@@ -144,3 +140,10 @@ project "glfw"
   filter "configurations:Release"
     runtime "Release"
     optimize "On"
+
+  usage "PUBLIC"
+    includedirs { "./include" }
+
+  usage "INTERFACE"
+    defines { "GLFW_INCLUDE_NONE" } -- Require any dependent project to implement it's own opengl loader
+    links { "glfw" }
